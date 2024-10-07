@@ -17,7 +17,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Set environment variables
 ENV FLASK_APP=run.py
 
-# Expose the port the app runs on
+# Expose the port the app runs
 EXPOSE 5000
 
 # Run the application with Gunicorn
