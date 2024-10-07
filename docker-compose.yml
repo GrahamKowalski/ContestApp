@@ -5,7 +5,7 @@ services:
     build:
       context: .
       args:
-        GITHUB_REPO_URL: https://github.com/GrahamKowalski/VotingApp
+        GITHUB_REPO_URL: https://github.com/GrahamKowalski/ContestApp
     expose:
       - "5000"
     environment:
