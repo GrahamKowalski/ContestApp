@@ -1,0 +1,32 @@
+<!-- templates/home.html -->
+{% extends "base.html" %}
+{% block content %}
+    <h1>Contests</h1>
+    <div class="card">
+        <h2 class="card-title">Active Contests</h2>
+        <div class="contest-grid">
+        {% for contest in active_contests %}
+            <div class="contest-item">
+                <h3>{{ contest.name }}</h3>
+                <p>Theme: {{ contest.theme }}</p>
+                <p>Ends: {{ contest.end_voting_date.strftime('%Y-%m-%d') }}</p>
+                <a href="{{ url_for('contest.contest_detail', contest_id=contest.id) }}" class="btn">View Contest</a>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+    
+    <div class="card">
+        <h2 class="card-title">Past Contests</h2>
+        <div class="contest-grid">
+        {% for contest in past_contests %}
+            <div class="contest-item">
+                <h3>{{ contest.name }}</h3>
+                <p>Theme: {{ contest.theme }}</p>
+                <p>Ended: {{ contest.end_voting_date.strftime('%Y-%m-%d') }}</p>
+                <a href="{{ url_for('contest.contest_detail', contest_id=contest.id) }}" class="btn">View Results</a>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,32 @@
+<!-- templates/admin/dashboard.html -->
+{% extends "base.html" %}
+{% block content %}
+    <h1>Admin Dashboard</h1>
+    <a href="{{ url_for('admin.create_contest') }}" class="btn">Create New Contest</a>
+    
+    <div class="card">
+        <h2 class="card-title">Active Contests</h2>
+        <div class="contest-grid">
+        {% for contest in active_contests %}
+            <div class="contest-item">
+                <h3>{{ contest.name }}</h3>
+                <p>{{ contest.start_date.strftime('%Y-%m-%d') }} to {{ contest.end_voting_date.strftime('%Y-%m-d') }}</p>
+                <a href="{{ url_for('admin.manage_contest', contest_id=contest.id) }}" class="btn">Manage Contest</a>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+    
+    <div class="card">
+        <h2 class="card-title">Past Contests</h2>
+        <div class="contest-grid">
+        {% for contest in past_contests %}
+            <div class="contest-item">
+                <h3>{{ contest.name }}</h3>
+                <p>{{ contest.start_date.strftime('%Y-%m-%d') }} to {{ contest.end_voting_date.strftime('%Y-%m-d') }}</p>
+                <a href="{{ url_for('admin.manage_contest', contest_id=contest.id) }}" class="btn">View Results</a>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+{% endblock %}

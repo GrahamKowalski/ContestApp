@@ -1,0 +1,98 @@
+<!-- templates/contest/detail.html -->
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <h1 class="card-title">{{ contest.name }}</h1>
+    <p><strong>Theme:</strong> {{ contest.theme }}</p>
+    <p><strong>Start Date:</strong> {{ contest.start_date.strftime('%Y-%m-%d') }}</p>
+    <p><strong>Last Submission Date:</strong> {{ contest.end_submission_date.strftime('%Y-%m-%d') }}</p>
+    <p><strong>End Voting Date:</strong> {{ contest.end_voting_date.strftime('%Y-%m-%d') }}</p>
+
+    {% if contest.start_date <= now <= contest.end_submission_date %}
+        <a href="{{ url_for('contest.submit_entry', contest_id=contest.id) }}" class="btn">Submit Entry</a>
+    {% endif %}
+</div>
+
+{% if contest.end_submission_date < now <= contest.end_voting_date %}
+    <div class="card">
+        <h2 class="card-title">Entries</h2>
+        <div class="entries-grid">
+            {% for entry in contest.entries %}
+                <div class="entry">
+                    <img src="{{ url_for('static', filename='uploads/' + entry.image_filename) }}" alt="Entry Image">
+                    <p>Votes: {{ entry.vote_count() }}</p>
+                    <form method="POST" action="{{ url_for('contest.vote', contest_id=contest.id) }}">
+                        <input type="hidden" name="entry_id" value="{{ entry.id }}">
+                        <button type="submit" class="btn">Vote</button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% elif now > contest.end_voting_date %}
+    <div class="card">
+        <h2 class="card-title">Contest Results</h2>
+        {% set sorted_entries = contest.sorted_entries() %}
+        {% if sorted_entries %}
+            {% set winner = sorted_entries[0] %}
+            <div class="winner-card">
+                <h3>Winner</h3>
+                <img src="{{ url_for('static', filename='uploads/' + winner.image_filename) }}" 
+                     alt="Winning Entry" 
+                     class="winner-image"
+                     onclick="openModal(this.src)">
+                <p>Submitted by: {{ winner.user.username }}</p>
+                <p>Votes: {{ winner.vote_count() }}</p>
+            </div>
+            <h3>All Entries</h3>
+            <div class="entries-grid">
+                {% for entry in sorted_entries %}
+                    <div class="entry">
+                        <img src="{{ url_for('static', filename='uploads/' + entry.image_filename) }}" 
+                             alt="Entry Image"
+                             onclick="openModal(this.src)">
+                        <p>Submitted by: {{ entry.user.username }}</p>
+                        <p>Votes: {{ entry.vote_count() }}</p>
+                        {% if loop.first %}
+                            <p><strong>Winner!</strong></p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No entries were submitted for this contest.</p>
+        {% endif %}
+    </div>
+{% endif %}
+
+<div id="imageModal" class="modal">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <img class="modal-content" id="modalImage">
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function openModal(imgSrc) {
+    var modal = document.getElementById("imageModal");
+    var modalImg = document.getElementById("modalImage");
+    modal.style.display = "block";
+    modalImg.src = imgSrc;
+}
+
+function closeModal() {
+    var modal = document.getElementById("imageModal");
+    modal.style.display = "none";
+}
+
+// Close the modal when clicking outside the image
+window.onclick = function(event) {
+    var modal = document.getElementById("imageModal");
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
+{% endblock %}

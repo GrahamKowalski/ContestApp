@@ -1,0 +1,56 @@
+<!-- templates/admin/manage_contest.html -->
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <h1 class="card-title">Manage Contest: {{ contest.name }}</h1>
+    
+    <form method="POST">
+        <label for="name">Contest Name:</label>
+        <input type="text" id="name" name="name" value="{{ contest.name }}" required>
+        
+        <label for="start_date">Start Date:</label>
+        <input type="date" id="start_date" name="start_date" value="{{ contest.start_date.strftime('%Y-%m-%d') }}" required>
+        
+        <label for="end_submission_date">Last Submission Date:</label>
+        <input type="date" id="end_submission_date" name="end_submission_date" value="{{ contest.end_submission_date.strftime('%Y-%m-%d') }}" required>
+        
+        <label for="end_voting_date">End Voting Date:</label>
+        <input type="date" id="end_voting_date" name="end_voting_date" value="{{ contest.end_voting_date.strftime('%Y-%m-%d') }}" required>
+        
+        <label for="theme">Theme:</label>
+        <input type="text" id="theme" name="theme" value="{{ contest.theme }}">
+        
+        <button type="submit" class="btn">Update Contest</button>
+    </form>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Contest Actions</h2>
+    <form method="POST" action="{{ url_for('admin.contest_action', contest_id=contest.id) }}">
+        {% if contest.end_submission_date > now %}
+        <button type="submit" name="action" value="start_voting" class="btn btn-warning">
+            Close Submissions & Start Voting
+        </button>
+        {% elif contest.end_voting_date > now %}
+        <button type="submit" name="action" value="end_voting" class="btn btn-danger">
+            End Voting & Publish Results
+        </button>
+        {% else %}
+        <p>This contest has ended.</p>
+        {% endif %}
+    </form>
+</div>
+
+<div class="card">
+    <h2 class="card-title">Contest Entries</h2>
+    <div class="entries-grid">
+        {% for entry in entries %}
+        <div class="entry">
+            <img src="{{ url_for('static', filename='uploads/' + entry.image_filename) }}" alt="Entry Image">
+            <p>Submitted by: {{ entry.user.username }}</p>
+            <p>Votes: {{ entry.votes.count() }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
